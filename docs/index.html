@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stratum — WYSIWYG SVG editor</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="menubar">
+	<span class="brand">Stratum</span>
+
+	<details class="menu">
+		<summary>File</summary>
+		<div class="menu-list">
+			<label class="menu-item file-btn">Load SVG…
+				<input id="file-input" type="file" accept="image/svg+xml,.svg" hidden>
+			</label>
+			<button id="reset-btn" class="menu-item">New (demo scene)</button>
+			<button id="save-btn" class="menu-item">Save SVG…</button>
+		</div>
+	</details>
+
+	<details class="menu">
+		<summary>Edit</summary>
+		<div class="menu-list">
+			<button id="undo-btn" class="menu-item">Undo</button>
+			<button id="redo-btn" class="menu-item">Redo</button>
+			<button id="delete-btn" class="menu-item">Delete selection</button>
+		</div>
+	</details>
+
+	<span class="sub">a deterministic selector+op language over SVG, plus optional on-device AI</span>
+	<span id="history-info" class="pill"></span>
+</header>
+
+<main class="layout">
+	<div class="toolbar">
+		<button id="tool-select" class="tool active" title="Select — click to select, drag to move">&#x25CB;</button>
+	</div>
+
+	<div id="viewport" class="viewport">
+		<div id="canvas-wrap">
+			<div id="canvas"></div>
+			<div id="gizmo-overlay" class="gizmo-overlay"></div>
+		</div>
+	</div>
+
+	<aside class="sidebar">
+		<div class="tabs">
+			<button class="tab active" data-tab="outliner">Outliner</button>
+			<button class="tab" data-tab="properties">Properties</button>
+			<button class="tab" data-tab="shell">AI/Shell</button>
+		</div>
+
+		<div class="tab-panel" data-panel="outliner">
+			<div id="outliner" class="tree"></div>
+		</div>
+
+		<div class="tab-panel" data-panel="properties" hidden>
+			<div id="properties"><p class="hint">Select an element (on the canvas or in the outliner) to edit its properties.</p></div>
+		</div>
+
+		<div class="tab-panel shell-panel" data-panel="shell" hidden>
+			<div class="shell-head">
+				<span class="shell-title">JS Shell</span>
+				<select id="model-select">
+					<option value="">Loading WebLLM catalog…</option>
+				</select>
+				<button id="model-load" class="chip">Load AI</button>
+				<button id="model-api" class="chip">API</button>
+				<button id="shell-clear" class="chip">Clear</button>
+			</div>
+			<div id="shell-log" class="shell-log"></div>
+			<div class="shell-row">
+				<span class="shell-row-label ai">AI</span>
+				<input id="ai-input" placeholder="Describe what to do… (Enter) — load AI model first" autocomplete="off">
+			</div>
+			<div class="shell-row">
+				<span class="shell-row-label">&gt;</span>
+				<textarea id="js-input" rows="1" placeholder="Enter JS — Shift+Enter for newline, ↑↓" autocomplete="off" spellcheck="false"></textarea>
+			</div>
+		</div>
+	</aside>
+</main>
+
+<dialog id="api-dialog" class="api-dialog">
+	<form method="dialog" id="api-form">
+		<h2>Connect an external API</h2>
+		<p class="hint">Model-agnostic, bring your own key — mirrors Strata's provider list. The key stays in this tab's memory only, never persisted or sent anywhere but the endpoint below.</p>
+
+		<div id="api-step1">
+			<label>Provider
+				<select id="api-provider">
+					<option value="openai">OpenAI</option>
+					<option value="anthropic">Anthropic (Claude)</option>
+					<option value="ollama">Ollama (local)</option>
+					<option value="custom">Custom (OpenAI-compatible)</option>
+				</select>
+			</label>
+			<label>Base URL <input id="api-baseurl" placeholder="https://api.openai.com/v1"></label>
+			<label id="api-key-row">API key <input id="api-key" type="password" placeholder="sk-…" autocomplete="off"></label>
+			<p id="api-step1-error" class="hint err" hidden></p>
+			<div class="dialog-actions">
+				<button type="button" id="api-cancel" class="chip ghost">Cancel</button>
+				<button type="button" id="api-fetch-models" class="chip">Fetch models →</button>
+			</div>
+		</div>
+
+		<div id="api-step2" hidden>
+			<label id="api-model-select-row">Model
+				<select id="api-model-select"></select>
+			</label>
+			<label id="api-model-manual-row" hidden>Model (typed manually) <input id="api-model-manual" placeholder="model id"></label>
+			<p id="api-step2-hint" class="hint" hidden></p>
+			<button type="button" id="api-model-toggle" class="link-btn" hidden>Type the model id manually instead</button>
+			<div class="dialog-actions">
+				<button type="button" id="api-back" class="chip ghost">← Back</button>
+				<button type="submit" id="api-connect" class="chip">Connect</button>
+			</div>
+		</div>
+	</form>
+</dialog>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
+

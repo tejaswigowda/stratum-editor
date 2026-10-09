@@ -1,0 +1,10 @@
+{
+  "name": "Stratum",
+  "short_name": "Stratum",
+  "description": "SVG-Strata: a deterministic selector+op language over SVG, plus optional on-device AI.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#12141a",
+  "theme_color": "#12141a",
+  "icons": []
+}
